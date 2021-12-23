@@ -11,6 +11,7 @@ int main()
 {
 	int n = 8;
 	double** A = CalculateA(n);
+
 	double** R = CalculateR(A, n);
 	for (int i = 0; i < n; i++)
 	{
@@ -23,25 +24,18 @@ int main()
 	double** X = GaussMethod(R, n);
 
 	cout << endl;
-	//for (int i = 0; i < n; i++)
-	//{
-	//	for (int j = 0; j < 2 * n; j++)
-	//	{
-	//		cout << X[i][j] << " ";
-	//	}
-	//	cout << endl;
-	//}
 
 	double** Check = MultiplyMatrix(A, X, n);
 
-	//for (int i = 0; i < n; i++)
-	//{
-	//	for (int j = 0; j < n; j++)
-	//	{
-	//		cout << Check[i][j] << " ";
-	//	}
-	//	cout << endl;
-	//}
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			cout << Check[i][j] << " ";
+		}
+		cout << endl;
+	}
+
 }
 
 
@@ -101,7 +95,7 @@ double** GaussMethod(double** R, int n)
 	double** X = new double* [n];
 	for (int i = 0; i < n; i++) X[i] = new double[n];
 
-	for (int k = 0; k < n; k++)// Прямой ход
+	for (int k = 0; k < n; k++)// Прямой ход метода Гаусса-Жордана
 	{
 		for (int i = 0; i < n; i++)
 		{
@@ -129,22 +123,24 @@ double** GaussMethod(double** R, int n)
 		}
 	}
 
-	cout << endl;
-
-	for (int i = 0; i < n; i++)
+	for (int k = n - 1; k >= 0; k--)//Обратный ход метода Гаусса-Жордана
 	{
-		for (int j = 0; j < 2 * n; j++)
+		for (int i = 2 * n - 1; i >= 0; i--) //i-номер столбца
+			RR[k][i] = RR[k][i] / R[k][k];
+		for (int i = k - 1; i >= 0; i--) //i-номер следующей строки после k
 		{
-			cout << R[i][j] << " ";
+			double K = RR[i][k] / RR[k][k];
+			for (int j = 2 * n - 1; j >= 0; j--) //j-номер столбца следующей строки после k
+				RR[i][j] = RR[i][j] - RR[k][j] * K;
 		}
-		cout << endl;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < 2 * n; j++)
+			{
+				R[i][j] = RR[i][j];
+			}
+		}
 	}
-
-	for (int i = 0; i < n; i++)
-	{
-		detR *= R[i][i];
-	}
-	cout << detR << endl;
 
 	for (int i = 0; i < n; i++)
 	{
@@ -173,49 +169,3 @@ double** MultiplyMatrix(double** A, double** B, int n)
 
 	return C;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//for (int i = k + 1; i < n + 1; i++)
-//{
-//	if (abs(R[i][k]) > Amax)
-//	{
-//		Amax = abs(R[i][k]);
-//		p = i;
-//	}
-//}
-//for (int j = k; j < n + 2; j++)
-//{
-//	Pr = R[k][j];
-//	R[k][j] = R[p][j];
-//	R[p][j] = Pr;
-//}
-//for (int i = k + 1; i < n + 1; i++)
-//{
-//	for (int j = k + 1; j < n + 2; j++)
-//	{
-//		R[i][j] = R[i][j] - (R[i][k] * R[k][j]) / R[k][k];
-//	}
-//}
