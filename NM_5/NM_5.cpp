@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -6,35 +7,43 @@ double** CalculateA(int n);
 double** CalculateR(double** A, int n);
 double** GaussMethod(double** R, int n);
 double** MultiplyMatrix(double** A, double** B, int n);
+void OutputMatrix(double** A, int n);
+double CalculateCond(double** A, int n);
+void OutputMatixToFile(double** A, int n);
 
 int main()
 {
+	setlocale(LC_ALL, "Russian");
+	cout.precision(3);
+	cout << scientific;
+	ofstream fout("Output.txt");
+	fout.clear();
+	fout.close();
+
 	int n = 8;
 	double** A = CalculateA(n);
+	cout << "Исходная матрица: " << endl;
+	OutputMatrix(A, n);
+	OutputMatixToFile(A, n);
 
 	double** R = CalculateR(A, n);
-	for (int i = 0; i < n; i++)
-	{
-		for (int j = 0; j < 2 * n; j++)
-		{
-			cout << R[i][j] << " ";
-		}
-		cout << endl;
-	}
+
+
 	double** X = GaussMethod(R, n);
+	cout << endl << "Искомая обратная матрица: " << endl;
+	OutputMatrix(X, n);
+	OutputMatixToFile(X, n);
 
-	cout << endl;
+	double** H = MultiplyMatrix(A, X, n);
+	cout << endl << "Проверка единичной матрицей: " << endl;
+	OutputMatrix(H, n);
+	OutputMatixToFile(H, n);
 
-	double** Check = MultiplyMatrix(A, X, n);
+	double maxA = CalculateCond(A, n);
+	double maxX = CalculateCond(X, n);
+	double cond = maxA * maxX;
 
-	for (int i = 0; i < n; i++)
-	{
-		for (int j = 0; j < n; j++)
-		{
-			cout << Check[i][j] << " ";
-		}
-		cout << endl;
-	}
+	cout << fixed << endl << "Обусловленность матрицы: " << cond << endl;
 
 }
 
@@ -168,4 +177,52 @@ double** MultiplyMatrix(double** A, double** B, int n)
 	}
 
 	return C;
+}
+
+void OutputMatrix(double** A, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			cout << A[i][j] << '\t';
+		}
+		cout << endl;
+	}
+}
+
+double CalculateCond(double** A, int n)
+{
+	double maxCond = 0;
+
+	for (int i = 0; i < n; i++)
+	{
+		double max = 0;
+		for (int j = 0; j < n; j++)
+		{
+			max += abs(A[i][j]);
+		}
+		if (max > maxCond)
+		{
+			maxCond = max;
+		}
+	}
+	return maxCond;
+}
+
+void OutputMatixToFile(double** A, int n)
+{
+	ofstream fout("Output.txt", ios::app);
+	fout.precision(5);
+	fout << scientific;
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			fout << A[i][j] << '\t';
+		}
+		fout << endl;
+	}
+	fout << endl;
+	fout.close();
 }
